@@ -1,0 +1,14 @@
+# Use a base image for the BUILDPLATFORM and use cross compilation
+FROM --platform=$BUILDPLATFORM golang:alpine AS builder
+ARG TARGETARCH
+ARG TARGETOS
+RUN mkdir /app
+ADD . /app/
+WORKDIR /app
+# Specify TARGETOS and TARGETARCH to trigger golang cross compilation.
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o hello .
+
+# Specify the TARGETPLATFORM for the base image to run the binary.
+FROM --platform=$TARGETPLATFORM alpine
+COPY --from=builder /app/hello .
+CMD ["./hello"]

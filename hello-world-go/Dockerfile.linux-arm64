@@ -1,0 +1,11 @@
+FROM golang:alpine AS builder
+RUN mkdir /app
+ADD . /app/
+WORKDIR /app
+# Hardcoded platform for linux/arm64 to use golang cross compilation.
+RUN GOOS=linux GOARCH=arm64 go build -o hello .
+
+# Hardcoded platform for linux/arm64
+FROM --platform=linux/arm64 alpine
+COPY --from=builder /app/hello .
+CMD ["./hello"]

@@ -1,0 +1,11 @@
+FROM golang:alpine AS builder
+RUN mkdir /app
+ADD . /app/
+WORKDIR /app
+# Hardcoded platform for linux/amd64
+RUN GOOS=linux GOARCH=amd64 go build -o hello .
+
+# Hardcoded platform for linux/amd64
+FROM --platform=linux/amd64 alpine
+COPY --from=builder /app/hello .
+CMD ["./hello"]
